@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Page</title>
+    <link rel="stylesheet" href="log.css">
+</head>
+<body>
+    <div id="main">
+        <form id="otpForm" onsubmit="sendOtp(event)">
+            <h2>Login</h2><br>
+            <label for="email">Enter Email:</label><br>
+            <input type="email" id="email" name="email" required><br>
+            <input type="submit" value="Send OTP">
+        </form>
+        <form id="loginForm" onsubmit="login(event)">
+            Enter OTP 
+            <input type="text" id="otp" name="otp"><br>
+            <input type="submit" value="Login">
+        </form>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.1/axios.min.js"></script>
+    <script>
+        async function sendOtp(e) {
+            e.preventDefault();
+
+            const email = e.target.email.value;
+
+            try {
+                const response = await axios.post('http://localhost:4200/send-otp', { email });
+                if (response.status === 200) {
+                    alert(`${response.data.message}`);
+                }
+            } catch (err) {
+                alert(`${err.response.data.message}`);
+                console.error("Error occurred while sending OTP", err);
+            }
+        }
+
+        async function login(e) {
+            e.preventDefault();
+
+            const LoginDetails = {
+                email: document.getElementById('otpForm').email.value,
+                otp: e.target.otp.value
+            };
+
+            try {
+                const response = await axios.post('http://localhost:4200/verify-otp', LoginDetails);
+                if (response.status === 200) {
+                    alert(`${response.data.message}`);
+                    window.location.href = "Book.html";
+                }
+            } catch (err) {
+                alert(`${err.response.data.message}`);
+                console.error("Error occurred during login", err);
+            }
+        }
+    </script>
+</body>
+</html>
